@@ -1,0 +1,30 @@
+##
+sample(10000,35)##poblacion y muestra
+help(sample)
+
+
+##Vamos a crear una pequeña base de datos
+## 4 variables: Nombre, edad, sexo, tipo de educacion ##
+
+nombre <-c ("sergio","alan","bet","judith","rodrigo","eric","irenka","angel")
+edad <-c ("36","20","23","20","21","21","22","21")
+sexo <- c ("hombre","hombre","mujer","mujer","hombre","hombre","mujer","hombre")
+teduca <- c ("publica","publica","publica","privada","publica","publica","publica","publica")
+##generar matriz
+base1 <- matrix (c(edad,nombre,sexo,teduca))
+## creamos un base de datos frame
+base1.1 <- data.frame(nombre,edad,sexo,teduca)
+##funcion table
+##para concer la frecuecia de las variables
+table(base1.1$edad)
+table(base1.1$sexo)
+attach(base1.1)##aparitr de esta linea se utiliza la base de datos 1.1
+table(edad)
+detach (base1.1)
+summary (base1.1$edad)
+##summary ordena datos
+##base dedatos 
+install.packages("foreign")
+require(foreign)
+sociodem <-read.dbf("C://Users//SALA-C7//Desktop//Unegi//SDEMT215.dbf")
+table(sociodem$SEX)
