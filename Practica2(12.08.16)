@@ -1,0 +1,47 @@
+#####PRACTICA2
+
+rm(list=ls())  ####limpiar el entorno de trabajo.
+setwd("C://Users//SALA-C7//Desktop//Inegi")
+SDEMT215<-data.frame(read.dbf("SDEMT215.dbf"))
+####para borrar rm(_____)
+View(SDEMT215)
+
+###otra forma de sacar frecuencias sin table
+
+install.packages("questionr")
+require(questionr)##libreria
+wtd.table(SDEMT215$POS_OCU)
+wtd.table(SDEMT215$POS_OCU,na.show=TRUE)
+wtd.table(SDEMT215$POS_OCU,weights =SDEMT215$FAC,na.show=TRUE )##weigth   que me va aponderar
+wtd.table(SDEMT215$POS_OCU,weights =SDEMT215$FAC)
+
+###tabulados con datos muestrales(sin ponerar)
+wtd.table(SDEMT215$SEX,SDEMT215$POS_OCU)
+
+###tabulados con datos muestrales(ponerar)
+wtd.table(SDEMT215$SEX,SDEMT215$POS_OCU,weights =SDEMT215$FAC)
+
+########ejercicio
+##1.obtener la frecuencia de la variable clase1(muestral)
+##2.obtener el tabulado de entidad y sexo (muestral ponderado)
+#1
+wtd.table(SDEMT215$CLASE1)
+#2
+wtd.table(SDEMT215$ENT,SDEMT215$SEX,weights =SDEMT215$FAC,na.show=TRUE )
+data.frame(wtd.table(SDEMT215$SEX,SDEMT215$ENT,weights =SDEMT215$FAC),wtd.table(SDEMT215$SEX,SDEMT215$ENT))
+
+
+
+###ETIQUETAR EN OTRA VARIABLE
+SDEMT215$SEXO<-factor(SDEMT215$SEX,levels=c(1,2),labels= c("Hombre","Mujer"))####variable(tuya)<-(variable del archivo, levels= c(1,2,3,...), labels=c("NOmbre1", "Nombre2", "Nombre3"...))
+wtd.table(SDEMT215$SEXO)
+
+####  ETIQUETAR EN LA MISMA VARIABLE
+SDEMT215$POS_OCU<-factor(SDEMT215$POS_OCU,levels=c(1,2,3,4,5),labels= c("sUBORDINADOS","EMPLEADORES","cUENTA PROPIA","SIN PAGO", "NE"))
+wtd.table(SDEMT215$POS_OCU)
+
+
+
+####TAREA
+SDEMT215$<-factor(SDEMT215$,levels=c(1,2),labels= c("","","","", ""))
+wtd.table(SDEMT215$POS_OCU)
