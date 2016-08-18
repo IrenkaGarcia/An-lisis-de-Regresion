@@ -1,0 +1,100 @@
+#####PRACTICA3
+
+rm(list=ls())  ####limpiar el entorno de trabajo.
+setwd("C://Users//SALA-C7//Desktop//Inegi")
+SDEMT215<-data.frame(read.dbf("SDEMT215.dbf"))
+####para borrar rm(_____)
+
+#______________________________________________________________________________________________#
+#####INSTALAR MI BASE DE DATOS
+install.packages("foreign")
+require(foreign)
+SDEMT215 <-read.dbf("C://Users//SALA-C7//Desktop//Inegi//SDEMT215.dbf")
+View(SDEMT215)
+
+#____________________________________________________________________________________________#
+###otra forma de sacar frecuencias sin table
+install.packages("questionr")
+require(questionr)##libreria
+wtd.table(SDEMT215$POS_OCU)
+wtd.table(SDEMT215$POS_OCU,na.show=TRUE)
+wtd.table(SDEMT215$POS_OCU,weights =SDEMT215$FAC,na.show=TRUE )##weigth   que me va aponderar
+wtd.table(SDEMT215$POS_OCU,weights =SDEMT215$FAC)
+#_________________________________________________________________________________________#
+###tabulados con datos muestrales(sin ponerar)
+wtd.table(SDEMT215$SEX,SDEMT215$POS_OCU)
+
+###tabulados con datos muestrales(ponerar)
+wtd.table(SDEMT215$SEX,SDEMT215$POS_OCU,weights =SDEMT215$FAC)
+
+########ejercicio
+##1.obtener la frecuencia de la variable clase1(muestral)
+##2.obtener el tabulado de entidad y sexo (muestral ponderado)
+#1
+wtd.table(SDEMT215$CLASE1)
+#2
+wtd.table(SDEMT215$ENT,SDEMT215$SEX,weights =SDEMT215$FAC,na.show=TRUE )
+data.frame(wtd.table(SDEMT215$SEX,SDEMT215$ENT,weights =SDEMT215$FAC),wtd.table(SDEMT215$SEX,SDEMT215$ENT))
+
+#____________________________________________________________________________________________#
+
+###ETIQUETAR EN OTRA VARIABLE
+SDEMT215$SEXO<-factor(SDEMT215$SEX,levels=c(1,2),labels= c("Hombre","Mujer"))####variable(tuya)<-(variable del archivo, levels= c(1,2,3,...), labels=c("NOmbre1", "Nombre2", "Nombre3"...))
+wtd.table(SDEMT215$SEXO)
+
+####  ETIQUETAR EN LA MISMA VARIABLE
+SDEMT215$POS_OCU<-factor(SDEMT215$POS_OCU,levels=c(1,2,3,4,5),labels= c("sUBORDINADOS","EMPLEADORES","cUENTA PROPIA","SIN PAGO", "NE"))
+wtd.table(SDEMT215$POS_OCU)
+
+#__________________________________________________________________________________________#
+
+####RECODIFICACION DE VARIABLES NUMERICAS (RANGOS)
+
+#METODO1____##cambiar de caracter a numerico(AS.NUMERIC)
+SDEMT215$EDAD11[as.numeric(SDEMT215$EDA)>=0& as.numeric(SDEMT215$EDA)<=10]<-1
+SDEMT215$EDAD11[as.numeric(SDEMT215$EDA)>=11& as.numeric(SDEMT215$EDA)<=20]<-2
+SDEMT215$EDAD11[as.numeric(SDEMT215$EDA)>=21& as.numeric(SDEMT215$EDA)<=30]<-3
+SDEMT215$EDAD11[as.numeric(SDEMT215$EDA)>=31& as.numeric(SDEMT215$EDA)<=40]<-4
+SDEMT215$EDAD11[as.numeric(SDEMT215$EDA)>=41]<-5
+ls(SDEMT215)####imprime laS variables incluyendo la que cree que es EDAD11
+table(SDEMT215$EDAD11)
+class(SDEMT215$ENT)###saber que tipo de variable es
+
+#_________###convertir clase factor en numerica(para eso primera convertir en caracter)
+SDEMT215$ENT <-( as.character(as.numeric(SDEMT215$ENT)))
+class(SDEMT215$ENT)###YA DEBE SER CARACTER
+
+
+##METODO____IF ELSE
+SDEMT215$EDAD111 <- ifelse(as.numeric(SDEMT215$EDA) >= 0 & as.numeric(SDEMT215$EDA)<=10,1,
+                  ifelse(as.numeric(SDEMT215$EDA) >= 11 & as.numeric(SDEMT215$EDA)<=20,2,
+                  ifelse(as.numeric(SDEMT215$EDA) >= 21 & as.numeric(SDEMT215$EDA)<=30,3,
+                  ifelse(as.numeric(SDEMT215$EDA) >= 31 & as.numeric(SDEMT215$EDA)<=40,4,5))))
+table(SDEMT215$EDAD111)
+
+
+####RECIDIFICAr Variables de caracter o tipo cadena
+class(SDEMT215$R_DEF)
+
+SDEMT215$VALIDO[as.character(SDEMT215$R_DEF)=="00"]<-"Entrevista completa"
+SDEMT215$VALIDO[as.character(SDEMT215$R_DEF)!="00"]<-"Entrevista incompleta"
+wtd.table(SDEMT215$VALIDO)
+table
+
+#_____________________________________________________________________________________________#
+
+####SUBCONJUNTO DE DATOS
+#SELECCIONANDO VARIABLES DE INTERES
+#METODO1
+var<-c("R_DEF","LOC","MUN","C_RES")
+newdata1<-SDEMT215[,var]
+
+####seleccionar casos u observaciones(subset(base de datos,variable==_))
+mujer<-subset(SDEMT215,SDEMT215$SEX==2)
+table(mujer$SEX)
+
+mujer$CD_A <-as.character(mujer$CD_A)
+mujer1<-subset(mujer,mujer$CD_A=="02" | mujer$CD_A=="16")
+table(mujer1$CD_A)
+
+
