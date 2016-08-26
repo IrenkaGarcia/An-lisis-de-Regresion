@@ -1,0 +1,44 @@
+#####********PRACTICA 4**********
+#_________________________________________________________________________________________________________
+####################PRACTICA AGUASCALIENTES 01, VERACRUZ 30
+#####INSTALAR MI BASE DE DATOS
+install.packages("foreign")
+require(foreign)
+SDEMT215 <-read.dbf("C://Users//SALA-C7//Desktop//Inegi//SDEMT215.dbf")
+View(SDEMT215)
+install.packages("questionr")
+require(questionr)##libreria
+
+
+##CAMBIAR DE NOMBRE A ENTIDADES
+SDEMT215$ENT<-factor(SDEMT215$ENT,levels=c("01","30"),labels= c("AGUASCALIENTES", "VERACRUZ"))
+wtd.table(SDEMT215$ENT)
+##ETIQUETAR SEXO
+SDEMT215$SEXO<-factor(SDEMT215$SEX,levels=c(1,2),labels= c("Hombre","Mujer"))####variable(tuya)<-(variable del archivo, levels= c(1,2,3,...), labels=c("NOmbre1", "Nombre2", "Nombre3"...))
+wtd.table(SDEMT215$SEXO)
+
+####  ETIQUETAR POS_OCU
+SDEMT215$POS_OCU<-factor(SDEMT215$POS_OCU,levels=c(1,2,3,4,5),labels= c("sUBORDINADOS","EMPLEADORES","cUENTA PROPIA","SIN PAGO", "NE"))
+wtd.table(SDEMT215$POS_OCU)
+
+#####CREAR BASES DE DATOS DE CADA ENTIDAD
+AGUASCALIENTES<-subset(SDEMT215,SDEMT215$ENT=="01")
+table(AGUASCALIENTES$ENT)
+VERACRUZ<-subset(SDEMT215,SDEMT215$ENT=="30")
+table(VERACRUZ$ENT)
+
+####TABLA1 POS.OCU Y SEXO
+data.frame(wtd.table(AGUASCALIENTES$SEXO,AGUASCALIENTES$POS_OCU,weights =AGUASCALIENTES$FAC),wtd.table(VERACRUZ$SEXO,VERACRUZ$POS_OCU,weights =VERACRUZ$FAC))
+data.frame(wtd.table(AGUASCALIENTES$POS_OCU,AGUASCALIENTES$SEXO,weights =AGUASCALIENTES$FAC),wtd.table(VERACRUZ$POS_OCU,VERACRUZ$SEXO,weights =VERACRUZ$FAC))
+
+
+#####TABLA2 POBLACION ECON. ACTIVA Y SEXO
+SDEMT215$CLASE1<-factor(SDEMT215$CLASE1,levels=c("1","2"),labels= c("PEA", "PNEA"))
+wtd.table(SDEMT215$CLASE1)
+data.frame(wtd.table(AGUASCALIENTES$CLASE1,AGUASCALIENTES$SEXO,weights =AGUASCALIENTES$FAC),wtd.table(VERACRUZ$CLASE1,VERACRUZ$SEXO,weights =VERACRUZ$FAC))
+
+
+###tabla 3 condicion actividad y sexo
+SDEMT215$RAMA_EST1<-factor(SDEMT215$RAMA_EST1,levels=c("1","2","3","4"),labels= c("PRIMARIO", "SECUNDARIO", "TERCIARIO", "NO, ESPECIFICADO"))
+wtd.table(SDEMT215$RAMA_EST1)
+data.frame(wtd.table(AGUASCALIENTES$RAMA_EST1,AGUASCALIENTES$SEXO,weights =AGUASCALIENTES$FAC),wtd.table(VERACRUZ$RAMA_EST1,VERACRUZ$SEXO,weights =VERACRUZ$FAC))
