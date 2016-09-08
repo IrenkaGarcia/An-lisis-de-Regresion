@@ -1,0 +1,39 @@
+#####********PRACTICA TAREA**********
+#_________________________________________________________________________________________________________
+####################PRACTICA 2 VARIABLES
+#####INSTALAR MI BASE DE DATOS
+var1<- c(39,43,21,64,57,47,28,75,34,52)
+var2<-c(65,78,52,82,92,89,73,98,56,75)
+####Calcular x^2
+#for (i in 1:length(var1)) 
+  x2<- var1*var1
+  print(x2)
+sumx2<-sum(x2)
+print(sumx2)
+
+xy<-var1*var2
+print(xy)
+sumxy<-sum(xy)
+print(sumxy)
+
+y2<- var2*var2
+print(y2)
+sumy2<-sum(y2)
+print(sumy2)
+
+#Sxy
+Sxy<-sumxy-((sum(var1)*sum(var2))/length(var1))
+print(Sxy)
+#Sxx
+Sxx<-sumx2-((sum(var1)^2)/length(var1))
+print(Sxx)
+#B1
+B1<-Sxy/Sxx
+#B0
+c<-median(var2)
+d<-median(var1)
+B0<-c-(B1*d)
+#gráfica
+plot(var1,var2,pch=18, xlab="Calificaciones Ingreso",ylab="Claificaciones de 1 semestre")
+mod1<-lm(var2~var1)
+abline(mod1)
