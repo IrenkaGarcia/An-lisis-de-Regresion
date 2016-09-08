@@ -1,0 +1,70 @@
+####****PRACTICA 6
+
+
+##Queremos comprobarm que la hipotesis que entre mayor ingreso de la 
+##familia hay una mayor estatura en los niños
+esta<-c(1.2,1.23,1.19,1.32,1.28,1.22,1.17,1.29,1.33,1.15)
+eco<-c(110,130,108,167,156,115,104,138,170,107)
+
+#1.gráfica de dispersión
+plot(eco,esta,pch=07,xlab="Ingreso económico",ylab="Estatura",main="Gráfica de dispersión",col="green")
+
+#2.cor()-----calcula el coeficiente de correlación(v.d,v.i, método)
+help(cor)
+cor(esta,eco,method="pearson")####=.9556 es decir hay una akta relación
+
+#3.Prueba de hipótesis----cor.test(v.d,v.i,método)
+cor.test(esta,eco,method="pearson")
+###si p-evalue es menor a .05 se rechaza la hipótesis nula pero si hay relación
+
+#4.Aplicamos el modelo---lm()
+mod1<-lm(esta~eco)
+summary(mod1)##llamamos al modelo y nos da los residuales, min, 
+###############cuartil, mediana, tercer cuartil, max.....Tambien te da los coeficientes,
+###############si son significativos o no, desviación estándar y la prob. de que sean sig.
+###############error estandar, r^2
+
+abline(mod1)#graficar la recta del mod1 en la gráfica de dispersión en las variables
+names(mod1)
+mod1$coefficients
+#con esto podriamos decirque tenemos nla ecuación
+esta=.932369+.002341 eco
+#_______________________________________________________________________________________________________________________________
+##Practica 6
+
+summary(mod1)$coefficients
+#se tieen un ajuste 
+esta=.932369+.002341 eco
+summary(mod1)
+#los valores de pvalue son inferioeres a .05 por lo que 
+#1) La relacion lineal de la variable dependiente e independientre es una relacion positiva
+#por cada peso de ingreso que aunmenta el padre o madre aunmenta la estatura .0023 
+#el error estandar residual es .0198 este valor es muy importante debido a que permite medir
+#la calidad del modelo 
+#con este error generamos los intervalos de confianza 
+#Los intervalos de conffianza permiten completar la informacion sobre las estimaciones 
+#para esto
+confit(mod1, level=.95)
+#interpretacion...con una priobabilidad del 95% B0 se encuentra en el intervalo (.8542,1.0105)
+#y B1 se encuentra en el intervalo (.0017,.0029)
+##BONDAD DE AJUSTE
+##Con la bondad de ajueste verificamos la calidad del modelo e interpretar la variable dependiente y se utiliza
+#la tabla anova 
+anova(mod1) 
+#En este caso la variabilidad del modelo es .033022=SSM 
+#se revisa la SSR=0.0031 
+#revisando los valores del summary el estadistico F > 1 y P-VALUE <.05 
+#se rechaza la hipotesis nula de F=1 
+# Y se puede establecer un modelo 
+summary(mod1)
+#REVISAR R2 MULTIPLE 
+# al rededor de 91% de la variablilidad de la estatura es explicada por la recta ajustada 
+
+
+
+#_______________________________________________________________________________________________________________
+## SUPUESTOS#####
+base1<-data.frame(eco,esta)
+base1$fitted.mod1<-fitted(mod1)
+base1$residuals.mod1<-residuals(mod1)
+base1$rstudent.mod1<-rstudent(mod1)
