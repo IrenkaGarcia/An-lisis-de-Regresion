@@ -1,0 +1,63 @@
+#####Práctica 8 Modelo de Regresioón Lineal Simple Distrito Federal
+install.packages("foreign")
+require(foreign)
+sdemt216 <-read.dbf("C://Users//SALA-C8//Desktop//Unegi//sdemt216.dbf")
+View(sdemt216)
+
+
+#####HIpotesis: Suponemos que los hombres tienen un ingreso mayor al de una mujer
+DISTRITO<-subset(sdemt216,sdemt216$ENT=="09")
+table(DISTRITO$ENT)
+###RECODIFICACION
+DISTRITO$SEX <-( as.numeric(as.character(DISTRITO$SEX)))
+class(DISTRITO$SEX)###YA DEBE SER CARACTER
+DISTRITO$ING7C <-( as.numeric(as.character(DISTRITO$ING7C)))
+class(DISTRITO$ING7C)###YA DEBE SER CARACTER
+###ING7C :Clasifi cación de la poblacion ocupada por nivel de ingreso
+
+###MODELO DE REGRESION LINEAL
+#ALEATORIO PARA UNA MUESTRA
+M_SEX<-sample(DISTRITO$SEX,50)
+M_ING<-sample(DISTRITO$ING7C,50)
+print(M_ING)
+#GRAFICA DE DISPERCION
+
+plot(M_ING,M_SEX,pch=10,xlab="Ingreso económico",ylab="Sexo",main="Gráfica de dispersión",col="darkgreen")
+
+##CORRELACIÓN
+cor(M_ING,M_SEX,method="pearson")
+#PRUEBA HIPOTESIS
+cor.test(M_ING,M_SEX,method="pearson")
+#POR LO TANTO SE RECHAZA LA HIPOTESIS
+
+
+mod1<-lm(M_ING~M_SEX)
+summary(mod1)
+
+abline(mod1)#graficar la recta del mod1 en la gráfica de dispersión en las variables
+names(mod1)
+mod1$coefficients
+#con esto podriamos decirque tenemos nla ecuación
+#M_ING=1.7633+.0766 M_SEX
+
+summary(mod1)$coefficients
+#se tiene un ajuste 
+
+summary(mod1)
+#los valores de pvalue son inferioeres a .05 por lo que es una relación negativa, por lo tanto no deoende una de la otra
+#1) POr lo tanto si eres hombre no ganas más que una mujer
+#el error estandar residual es 2.366 este valor es muy importante debido a que permite medir
+#la calidad del modelo 
+#con este error generamos los intervalos de confianza 
+#Los intervalos de conffianza permiten completar la informacion sobre las estimaciones 
+#para esto
+install.packages("car")
+require(car)
+confit(mod1, level=.95)
+
+#la tabla anova 
+anova(mod1) 
+#En este caso la variabilidad del modelo es .072=SSM 
+#se revisa la SSR=263.193
+#revisando los valores del summary el estadistico F > 1 y P-VALUE <.05 
+#se rechaza la hipotesis nula de F=1 
