@@ -1,0 +1,49 @@
+########**PRACTICA 8**###############
+
+##___MODELO DE REGRESION MULTIPLE
+capa<-c(4330,5500,5500,4700,5200,5500,4700,5500,5800,5000)
+calidad<-c(2,3,4,3,4,4,4,5,5,5)
+precio<-c(190,219,249,249,250,340,289,395,439,525)
+mochil<-data.frame(precio,capa,calidad)
+
+
+##___PRIMERO APLICAMOS UNA CORRELACION
+cor(mochil,use="everything",method="pearson")#observamos que las variables tienen correlaciones diversas
+                                            #(precio con capacidad=.36,es decir que hay poca correlacion)
+
+##__APLICAMOS MODELOS
+modmo<-lm(precio~calidad+capa)
+summary(modmo)#resultados del modelo
+              #se revisa la R2 ajustada por ser un mrm
+              #R2 ajustada es de .70 lo que implica que la recta de regresion
+              #explica en 70% la variabilidad del modelo
+              #Reviasndo el valor de F y P-value tenemos que si cumple con los criterios de un buen ajuste(F>1 y P-vaLUE<.05)
+              #con estod datos podemos mencionar que estamos ante un buen modelo por lo que se pasa al diagnostico
+              #el diagnodtico se realiza para poder generalizar los resultados del modelo a partir de la revision de los supuestos
+#lo primero que se hace en un MRM es observar gráficamente los supuestos
+#en primer lugar se contrastan los valores ajustados
+#se utiliza plot y el argumento which=1(con5tastar los valore)
+
+##__SUPUESTO UNO
+plot(modmo,which=1,pch=16)#Aqui esperamos que los residuos se distribuyan sin patron
+                          #Una tendencia en la variabilidad de los residuos sugiere que la varianza esta relacionada con
+                          #la media, violando el supuesto de varianza constante
+
+
+##__SUPUESTO DE NORMALIDAD
+plot(modmo,which=2,pch=16)#en este caso esperamos que los residuos sean tipificados alrededor de la linea
+                          #se observa que si hay distribución normal 
+
+
+##__TERCER SUPUESTO
+#los residuos estan estandarizados 
+#por sus desviaciones estandar estimadas
+plot(modmo,which=3,pch=16)#los residuos se distribuyen constantes en los valores ajustados
+                          #una gráfica sin patrón observable
+
+
+##__CUARTO SUPUEStO
+plot(modmo,which=5,pch=16)#expone la importancia de cada observacion en el modelo
+                          #en esta distancia la gráfica nos muestra las observaciobnes que podrian impactar al modelo
+                          #por lo que sugiere eliminarlas
+###__________________________________________________________________________________________________________________
