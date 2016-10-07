@@ -1,0 +1,94 @@
+##########ejercicio de clase#############
+
+y <-c (25.5, 31.2, 25.9, 38.4, 18.4, 26.7, 26.4,25.9,32,25.2,39.7,35.7,26.5)
+
+x1<-c(1.74,6.32,6.2,10.52,1.19,1.22,4.10,6.32,4.08,4.15,10.15,1.72,1.70)
+x2<-c(5.30,5.42,8.41,4.63,11.60,5.85,6.62,8.72,4.42,7.60,4.83,3.12,5.3)
+x3<-c(10.8,9.4,7.2,8.5,9.4,9.9,8,9.1,8.7,9.2,9.4,7.6,8.2)
+
+## 0) analizar graficos de dispersion y pruebas de correlacion
+#f¿grafico dispercion
+modmo<-lm(y~x1+x2+x3)
+plot(modmo,which=2,pch=13)
+#corelación
+mochil<-data.frame(y,x1,x2,x3)
+cor(mochil,use="everything",method="pearson")
+
+## 1) plantear la ecuacion estimada origina, es decir con todas las variables
+summary(modmo)
+modmo$coefficients
+y=39.1766+1.0165 x1-1.8607 x2-.346138 x3
+## 2) analizar la anova, r cuadrada, estadistico F (mediante p.h.)
+anova(modmo)
+summary(modmo)
+## r^2=.9119 lo que explica en 91% la variabilidad del modelo
+### p value <.05 entonces se rechaza la hipotesis nula y se puede aplicar el modelo
+## 3) comparen modelos ccon backward y analicen el modelo qyue genere la funcion step
+## con analizar me refiero a los incisos 0,1 y 2 (en dado casi que la funcion step genere 
+##el mismo modelo,que el modelo completo hagan caso omiso de eso
+step(modmo,direction="backward")
+### podemos observar que el modelo mas completo es y~x1+x2 dada su AIC=20.6
+
+
+
+#########VOLVIENDO A PLICAR CORRELACION CON EL NUEVO MODELO Y ANOVA
+## 0) analizar graficos de dispersion y pruebas de correlacion
+#f¿grafico dispercion
+modmo2<-lm(y~x1+x2)
+plot(modmo2,which=2,pch=13)
+#corelación
+mochil2<-data.frame(y,x1,x2)
+cor(mochil2,use="everything",method="pearson")
+
+## 1) plantear la ecuacion estimada origina, es decir con todas las variables
+summary(modmo2)
+modmo2$coefficients
+y=36.0888+1.0310 x1-1.8688 x2
+
+## 2) analizar la anova, r cuadrada, estadistico F (mediante p.h.)
+anova(modmo2)
+summary(modmo2)
+## r^2=.9088 lo que explica en 90.88% la variabilidad del modelo
+### p value <.05 entonces se rechaza la hipotesis nula y se puede aplicar el modelo
+
+
+##########################
+##4) realizar la prueba de 3 supuestos a este modelo (kolmogorov-smirnov,
+#breusch~pagan, y durvin watsoon)analicen los resultados de estas pruebas
+### SUPUESTO 1
+plot(modmo2,which=1,pch=13)
+## LOS RESIDUOS SE DISTRIBUYEN SIN PATRON 
+### SUPUESTO 2 
+plot(modmo2,which=2,pch=13)
+## esperamos que los residuos sean tipificados al redeopdr de una linea obserbando que si hay distribucion normal
+plot(modmo,which=3,pch=13)
+## los residuos estan estandarizados por sus desviaciones estandar estimadas, sin patron observable
+#### SUPUESTO 4
+plot(modmo,which=5,pch=13)
+##expone la importancia de cada observacion en el modelo nos muestra las observaciones que impactan al modelo 
+## en este caso el (5,11 y 12)
+
+
+
+#######1° pruebla de normalidad
+##necesitamos paqueteria lmtest 
+install.packages("lmtest")
+require(lmtest)
+ks.test (mochil2$rstud, "pnorm")## esto es paara la prueba de normalidad
+#lo que se espera es que se plantea una prueba de hipotesis y se espera un p value mayor a .05
+#se tiene un p value menor a .05 entonces se rechaza la H0
+
+####### 2° segunda prueba que se hace es la homogeneidad de varianzas y esta prueba
+##se realiza con la funcion bptest
+bptest(modmo2,studentize = FALSE,data=mochil2)
+## el segundo argumento se toma para que no se tomen los errores estandarizados
+### tenemos un p value mayor a .05  por lo tanto pasa la prueba de homogeneidad
+
+######### 3°prueba es de autocorrelación 
+## esta prueba se llama de durbin watson
+#### la funcion para esta prueba es dwtest()
+dwtest(modmo2,alternative="two.sided",data=mochil2)
+##en esta prueba hay dos formas para comprobar 
+##1) el p value mayor a .05 (no se rechza la prueba de hipotesis)
+##2) el valor de durbin watson (rango aceptable 1.5 a 2.5) esto queire decir que no hay independencia  ya que tenemos un dw<1.5 
+## no hay correlacion entre los residuos
