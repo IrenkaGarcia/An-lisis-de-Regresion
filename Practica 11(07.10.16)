@@ -1,0 +1,211 @@
+################practica 11###########################
+##___MODELO DE REGRESION MULTIPLE
+capa<-c(4330,5500,5500,4700,5200,5500,4700,5500,5800,5000)
+calidad<-c(2,3,4,3,4,4,4,5,5,5)
+precio<-c(190,219,249,249,250,340,289,395,439,525)
+mochil<-data.frame(precio,capa,calidad)
+
+##___PRIMERO APLICAMOS UNA CORRELACION
+cor(mochil,use="everything",method="pearson")#observamos que las variables tienen correlaciones diversas
+#(precio con capacidad=.36,es decir que hay poca correlacion)
+
+##__APLICAMOS MODELOS
+modmo<-lm(precio~calidad+capa)
+summary(modmo)#resultados del modelo
+#se revisa la R2 ajustada por ser un mrm
+#R2 ajustada es de .70 lo que implica que la recta de regresion
+#explica en 70% la variabilidad del modelo
+#Reviasndo el valor de F y P-value tenemos que si cumple con los criterios de un buen ajuste(F>1 y P-vaLUE<.05)
+#con estod datos podemos mencionar que estamos ante un buen modelo por lo que se pasa al diagnostico
+#el diagnodtico se realiza para poder generalizar los resultados del modelo a partir de la revision de los supuestos
+#lo primero que se hace en un MRM es observar gráficamente los supuestos
+#en primer lugar se contrastan los valores ajustados
+#se utiliza plot y el argumento which=1(con5tastar los valore)
+
+##__SUPUESTO UNO
+plot(modmo,which=1,pch=16)#Aqui esperamos que los residuos se distribuyan sin patron
+#Una tendencia en la variabilidad de los residuos sugiere que la varianza esta relacionada con
+#la media, violando el supuesto de varianza constante
+
+
+##__SUPUESTO DE NORMALIDAD
+plot(modmo,which=2,pch=16)#en este caso esperamos que los residuos sean tipificados alrededor de la linea
+#se observa que si hay distribución normal 
+
+
+##__TERCER SUPUESTO
+#los residuos estan estandarizados 
+#por sus desviaciones estandar estimadas
+plot(modmo,which=3,pch=16)#los residuos se distribuyen constantes en los valores ajustados
+#una gráfica sin patrón observable
+
+
+##__CUARTO SUPUEStO
+plot(modmo,which=5,pch=16)#expone la importancia de cada observacion en el modelo
+#en esta distancia la gráfica nos muestra las observaciobnes que podrian impactar al modelo
+#por lo que sugiere eliminarlas(los numero que muestra la gráfica)
+
+##__para eliminar los renglones q no tienen congruencia
+##mochil1 <- mochil[c(-1,-7,-10),]
+##variable<-de mi matriz[c(elimina el renglon1,7,10), no elimina columna]
+##mochil2 <-mochil[,-2]
+
+modmo2<-lm(precio~calidad+capa,mochil1)
+modmo3<-lm(mochil1$precio~mochil1$calidad+mochil1$capa)
+summary(modmo2)
+summary(modmo3)
+#se ve reflejado el cambio en R2
+###################################################################
+#despues de analiza graficamente se aplican pruebas para confirmar 
+#se aplican pruebas para confirmar que el mrm si cumple con los supuestos
+## para aplicar estas pruebas se generan klos valoes ajustados, residuales y estandarizados
+mochil$ajustados<- fitted(modmo)
+mochil$res<- residuals(modmo)
+View(mochil)
+mochil$rstud<-rstudent(modmo)
+
+
+#######1° pruebla de normalidad
+##necesitamos paqueteria lmtest 
+install.packages("lmtest")
+require(lmtest)
+ks.test(mochil$rstud,"pnorm")## esto es paara la prueba de normalidad
+#lo que se espera es que se plantea una prueba de hipotesis y se espera un p value mayor a .05
+#si tenemos un un p value mayor a .05 no se rechaza la Ho y se acepta que hay normalidad
+#en este caso el modelo pasa la prueba de normalidad
+
+
+####### 2° segunda prueba que se hace es la homogeneidad de varianzas y esta prueba
+##se realiza con la funcion bptest
+bptest(modmo,studentize = FALSE,data=mochil)
+## el segundo argumento se toma para que no se tomen los errores estandarizados
+### tenemos un p value mayor a .05  por lo tanto pasa la prueba de homogeneidad
+###varianzas
+
+
+######### la tercera prueba es de autocorrelación 
+## esta prueba se llama de durbin watson
+#### la funcion para esta prueba es dwtest()
+dwtest(modo,alternative="two.sided",data=mochil)
+##en esta prueba hay dos formas para comprobar 
+##1) el p value mayor a .05 (no se rechza la prueba de hipotesis)
+##2) el valor de durbin watson (rango aceptable 1.5 a 2.5) esto queire decir que hay independencia netre los errores o no existe correlcion entre los errores
+######### Hasta aqui podriamos confirmar que no  hay correlacion entre los residuos 
+#con estas pruebas ya se confirma que tenemos un modelo  con buen ajuste
+#sin embargo hay q revisar  los casos atipicos
+## para revisar se usa la libreria car
+install.packages("car")
+require(car)
+outlierTest(modmo)
+outlier.test(modmo)### muestra los casos atipicos  o los probables atipicos
+### una vez que observamos los casos atipicos procedemos a conocer la influencia de estos 
+#casos en el modelo para observar la influencia se utiliza la funcion influence.measures()
+influ<-influence.measures(modmo)
+summary(influ)
+# en la primera columna se observan los casos con mayor influyentes que en el modelo son 1,2,10
+#las columnas que hacen refrencia a dfb nos indican la influencia en los coeficientes del modelo
+#las columnsd que nos presentan mayor interes son las cook.d es la distancia de cook
+# y entre mas cercano a 1 hay mayor influencia de la observación en este caso a obs 10
+#es a la que tiene mayor distancia de cook en esta distancia valores mayores a 1
+# hay certeza de que si influyen en la columna de hat se asocia con las medidad de 
+#leverage que varian entre 0 y 1 entre mas cercano a uno mayor influencia 
+#ademas de estas pruebas se hace el analisis grafico de los casos influyentes para este analalisis tenemos la 
+#funcion influencepot()..... se requiere la libreria car
+### l ananlisis de este grafico se realiza  con base en el tamaño de las circunferencias que arroja
+# es decir a mayor circunferencia el caso tiene mayot influencia
+influencePlot(modmo)
+### Grafica de distancia de cook...se requiere de la paqueteria faraway
+##install.packages("faraway")
+##require (faraway)
+install.packages("stats")
+dc<-cooks.distance(modmo)
+etiqueta<- rownames(mochil)
+halfnorm(dc,3,etiqueta)
+plot (capa, precio, pch=2,xlab="capa", ylab="precio", main="grafica de dispercion",col= "blue")
+cor(precio,capa,method="pearson")
+cor.test(precio,calidad,method="pearson")
+##comparaciond e modelos 
+##pretendemos seleccionar el mejor subconjunto de valiables independientes
+## en este caso para la aplicacion del mrn tenemkos dos variables independientes 
+##calidad y capasidad que se proponen comparar tres modelos 
+## con la finalidad de aplicar el principio de parsimonia, conoser var independientes
+##inesesarias evitar multicolinealidad, es decir que se tienen muchas variables intentando explicar el modelo 
+##ante estas variables se pueden comparar tres modelos 
+### 1 Precio- capacidad 
+###2 precio- calidad 
+## 3 precio-calidad+capacidad 
+## COMO SELECCIONAMOS EL MEJOR MODELO?
+##criterio de informacion de akaike (AIC)
+##EL PROBLEMA DE UTILIZAR r^2 para comparar modelos es que al introducir 
+##nuevas variables al modelo, esta medida siempre crese 
+##estamos decidiendo cual de todos los modelos ajusta mehjor a los datos 
+## el modelo con mas var independientes siempre sera el mejor ajustador 
+##por eso se utiliza el AIC una medida de ajuste que penaliza el modelo 
+##por tener mas variables biene definido por
+### AIC=(n)(log(scr/n))+2k 
+## scr= a la suma de cuandrados residuales 
+## n= numero de casos en el modelo 
+## k = numero de variables independientes 
+## el problema es que el unico criterio para el AIC es si el AIC 
+##es mayor el modelo es peor si el AIC es menjor el modelo es mejor, 
+##es decir esperamos un AIC mas pequeño 
+##el AIC nos va a ayudar a decidir sobre un modelo
+## el emtodo mas recomendable es el metodo STEP BYSTEP
+## para r se utiliza la funcion STEP()
+## adentro del metodo de STEP BYSTEP hay tres modalidades 
+## 1 Es forwar ... parte del coeficioente B0 y de ahi va probando las variables 
+##independientes para ver cual es la que aporta mas al modelo 
+## 2 backward... r empieza con todas la variables independientes 
+##y estudio si el AIC baja cuando hay cambios en variables 
+## 3 BOTH ... empieza como el forwar la diferencia es que raliz aun test para
+##conocer el valor independiente menos util
+
+##EL METODO MAS RECOMENDABLE es el BACKWAR por que permite probar cuando una variable tiene influencia 
+## solo si otra variable permanece constante 
+
+moch<- data.frame (precio,capa,calidad)
+cor(moch,use="everything",method="pearson")
+mod1<- lm(precio ~ capa+ calidad, data=moch)
+summary (mod1)
+
+step(mod1,direction="backward")
+
+### aqui podemos ver que el metodo step analizo 2 modelos
+##1)precio~ capa+ calidad con un AIC=83.90
+##2) precio~ calidad con un AIC=83.51
+
+###ahora vanmos a probar con el metodo de both
+step(mod1,direction="both")
+##tenemos un resultado igual al de bakward por la forma que se construye este metodo
+###ahora con el metodo forward
+step(mod1,direction="forward")
+## en este solo se muestra el modelo completo porque inicia haciendo pruebas con el modelo
+#nulo y solo deja el modelo completo porque es el mayor AIC muestra
+### en este caso nos quedamos con el AIC que es el modelo de precio~calidad...
+
+##################################################################################################
+
+mod2<-lm(precio~calidad,data=moch)
+#Aplicar supuestos pra ver si tenemos un buen modelo
+mochi$ajus<-fitted(mod2)
+mochi$resi<-residuals(mod2)
+moch$rstud<-rstudent(mod2)
+
+##Probamos supuesto de normalidad
+##necesitamos paqueteria lmtest 
+install.packages("lmtest")
+require(lmtest)
+ks.test(moch$rstud,"pnorm")## esto es paara la prueba de normalidad
+#histograma
+#se parece a una distribución normal
+hist(moch$rtud,xlab="residuales", main="HIST RESIDUALES")
+
+#homogeneidad de varianzas
+#p=.4154>.05  ->   la varianza es constante a lo largo de la muestra
+bptest(modmo,studentize=FALSE,data=mochil)
+
+#dependencia de residuales
+dwtest(modmo, alternative="two.sided=,data=mochil)
+
+#prueba de atipicos
+install.packages("car")
