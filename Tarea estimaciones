@@ -1,0 +1,44 @@
+##considerando el modelo 
+##Yt=B0+B1X1+B2X2+Ut
+## con lo siguientes atos ajusten el modelo
+## Yt     x1     x2
+## 10     1       0
+## 25     3       -1
+## 32     4       0
+## 43     5       1
+## 58     7       -1
+## 62     8       0
+## 67     10      -1
+## 71     10      2
+
+##con estos datos estimar los valores b0,b1 y b2 
+## para estimar estos parametros  hacerlo a traves de algebra matricial con la formula vista en clase
+
+
+y<-c(10,25,32,43,58,62,67,71)
+x1<-c(1,3,4,5,7,8,10,10)
+x2<- c(0,-1,0,1,-1,0,-1,2)
+xo<-c(1,1,1,1,1,1,1,1)
+
+mod<-data.frame(y,x1,x2)
+modelo<-lm(y~x1+x2)
+summary(modelo)#resultados del modelo
+
+### usando algebra matricial
+cor(mod,use="everything",method="pearson")
+modelo<-lm(y~x1+x2)
+##Xmat<-data.frame(x1,x2,xo)
+mx<- matrix(c(1,1,1,1,1,1,1,1,1,3,4,5,7,8,10,10,0,-1,0,1,-1,0,-1,2),nrow=8,ncol=3,byrow=F,
+            dimnames = list(c("x1","x2","x3","x4","x5","x6","x7","x8"),c("x0","x1","x2")))
+print(mx)
+xt<-t(mx)
+print(t(mx))
+multxxt<-xt%*%mx
+print (multxxt)
+xty<-xt%*%y
+print(xty)
+xi<-solve(multxxt)
+xixty<-xi%*%xty
+print(xixty)
+y=6.47+6.58 x1+.25 x2
+### por lo tanto b0=6.47,b1=6.58 y b2=.25
