@@ -1,0 +1,415 @@
+####*/*/*/*/*/*/*/*/**BANCO MUNDIAL REGRESION**\*\*\*\*\*\*\*\*\*\*\*\*\
+###ejercicio de tarea
+##Alumnos:
+##___César Aguas García
+##___Andrea Amero Granados
+##___Jocelyn Florencio Alcantar
+##___Irenka Nailea García Valdés
+
+## deseamos estimar una recta de regresion donde las v.d
+## es la esperanza de vida femenina y las v.i son:
+### la TMI (tasa de mortalidad infantil)
+### la TGF (tasa global de fecundidad)
+### porcentaje de hombres analfabetas(alfabmas)
+### porcentaje de mujeres analfabetas (alfabfem)
+### porcentaje de poblaciíon urbana (urbana)
+### PIB percapita
+### la relacion entre los nacimientos  y defunciones (nac_def)
+### la tasa de crecimiento de la población (%anual)
+###datos  Banco mundial  2005-2015
+##Mexico, Brasil, y Argentina
+###plantar modelo graficos pruebas de correlacion planteo modelo, 
+###saco summary y anova, comparaciopn de modelos y quedarme solo con
+###un modelo  uso step by step y aplico los supuestos
+##http://data.worldbank.org/data-catalog/world-development-indicators    
+
+install.packages("foreign")
+require(foreign)
+base3<-read.csv("C://Users//ACER//Desktop//sinfilt.csv")
+
+
+MEX <- subset(base3, base3$Codigo.País == "MEX")
+ARG <- subset(base3, base3$Codigo.País == "ARG")
+BRA <- subset(base3, base3$Codigo.País  == "BRA")
+
+
+
+FERM<-c(MEX$X2005[1],MEX$X2006[1],MEX$X2007[1],MEX$X2008[1],MEX$X2009[1],MEX$X2010[1],MEX$X2011[1],MEX$X2012[1],MEX$X2013[1],MEX$X2014[1])
+PIBM<-c(MEX$X2005[2],MEX$X2006[2],MEX$X2007[2],MEX$X2008[2],MEX$X2009[2],MEX$X2010[2],MEX$X2011[2],MEX$X2012[2],MEX$X2013[2],MEX$X2014[2])
+ESM<-c(MEX$X2005[3],MEX$X2006[3],MEX$X2007[3],MEX$X2008[3],MEX$X2009[3],MEX$X2010[3],MEX$X2011[3],MEX$X2012[3],MEX$X2013[3],MEX$X2014[3])
+MIM<-c(MEX$X2005[4],MEX$X2006[4],MEX$X2007[4],MEX$X2008[4],MEX$X2009[4],MEX$X2010[4],MEX$X2011[4],MEX$X2012[4],MEX$X2013[4],MEX$X2014[4])
+CPM<-c(MEX$X2005[5],MEX$X2006[5],MEX$X2007[5],MEX$X2008[5],MEX$X2009[5],MEX$X2010[5],MEX$X2011[5],MEX$X2012[5],MEX$X2013[5],MEX$X2014[5])
+PUM<-c(MEX$X2005[6],MEX$X2006[6],MEX$X2007[6],MEX$X2008[6],MEX$X2009[6],MEX$X2010[6],MEX$X2011[6],MEX$X2012[6],MEX$X2013[6],MEX$X2014[6])
+MUM<-c(MEX$X2005[7],MEX$X2006[7],MEX$X2007[7],MEX$X2008[7],MEX$X2009[7],MEX$X2010[7],MEX$X2011[7],MEX$X2012[7],MEX$X2013[7],MEX$X2014[7])
+AMM<-c(MEX$X2005[8],MEX$X2006[8],MEX$X2007[8],MEX$X2008[8],MEX$X2009[8],MEX$X2010[8],MEX$X2011[8],MEX$X2012[8],MEX$X2013[8],MEX$X2014[8])
+AHM<-c(MEX$X2005[9],MEX$X2006[9],MEX$X2007[9],MEX$X2008[9],MEX$X2009[9],MEX$X2010[9],MEX$X2011[9],MEX$X2012[9],MEX$X2013[9],MEX$X2014[9])
+
+
+PibA<-c(ARG$X2005,ARG$X2006,ARG$X2007,ARG$X2008,ARG$X2009,ARG$X2010,ARG$X2011,ARG$X2012,ARG$X2013,ARG$X2014)
+PibA
+FERA<-PibA[c(1,10,19,28,37,46,55,64,73,82)]
+PIBA<-PibA[c(2,11,20,29,38,47,56,65,74,83)]
+ESA<-PibA[c(3,12,21,30,39,48,57,66,75,84)]
+MIA<-PibA[c(4,13,22,31,40,49,58,67,76,85)]
+CPA<-PibA[c(5,14,23,32,41,50,59,68,77,86)]
+PUA<-PibA[c(6,15,24,33,42,51,60,69,78,87)]
+MUA<-PibA[c(7,16,25,34,43,52,61,70,79,88)]
+AMA<-PibA[c(8,17,26,35,44,53,62,71,80,89)]
+AHA<-PibA[c(9,18,27,36,45,54,63,72,81,90)]
+
+
+PibB<-c(BRA$X2005,BRA$X2006,BRA$X2007,BRA$X2008,BRA$X2009,BRA$X2010,BRA$X2011,BRA$X2012,BRA$X2013,BRA$X2014)
+PibB
+FERB<-PibB[c(1,10,19,28,37,46,55,64,73,82)]
+PIBB<-PibB[c(2,11,20,29,38,47,56,65,74,83)]
+ESB<-PibB[c(3,12,21,30,39,48,57,66,75,84)]
+MIB<-PibB[c(4,13,22,31,40,49,58,67,76,85)]
+CPB<-PibB[c(5,14,23,32,41,50,59,68,77,86)]
+PUB<-PibB[c(6,15,24,33,42,51,60,69,78,87)]
+MUB<-PibB[c(7,16,25,34,43,52,61,70,79,88)]
+AMB<-PibB[c(8,17,26,35,44,53,62,71,80,89)]
+AHB<-PibB[c(9,18,27,36,45,54,63,72,81,90)]
+#_________________________________________________________________________________________________________________
+######################ANÁLISI MÉXICO
+EMEX<-data.frame(ESM,FERM,PIBM,MIM,CPM,PUM,MUM,AMM,AHM)
+
+##CORRELACIÓN
+cor(EMEX,use="everything",method="pearson")
+##MODELO
+modMex<-lm(ESM~FERM+PIBM+MIM+CPM+PUM+MUM+AMM+AHM)
+summary(modMex)
+##COEFICIENTES
+modMex$coefficients
+#y=735525.57367-12176.60708 FERM-37739.49427 PIBM-2071.54338MIM+254.63413 CPM-261.08938 PUM -1849.86401 MUM+ 17.84644 AMM- 5013.67369 AHM
+
+## Hasta el momento no es aceptable el modelo ya que nuestro p-value es mayor a .05 por lo que no se rechaza la Ho
+## Y nuestra F es menor a 1 por lo que se define que no podemos aceptar el modelo
+## a continuacion observaremos las variables para ver cuales son significativas y cuales no para asi poder 
+## eliminar las que no nos sirven.
+
+##ANOVA
+anova(modMex)
+##SUPUESTOS
+#1
+plot(modMex,which=1,pch=16)
+     #Aqui esperamos que los residuos se distribuyan sin patron
+     #Una tendencia en la variabilidad de los residuos sugiere que la varianza esta relacionada con
+     #la media, violando el supuesto de varianza constante
+#2
+plot(modMex,which=2,pch=16)
+    #en este caso esperamos que los residuos sean tipificados alrededor de la linea
+    #se observa que si hay distribución normal 
+#3
+plot(modMex,which=3,pch=16)
+    #los residuos se distribuyen constantes en los valores ajustados
+    #una gráfica sin patrón observable
+
+#4
+plot(modMex,which=5,pch=16)
+    #expone la importancia de cada observacion en el modelo
+    #en esta distancia la gráfica nos muestra las observaciobnes que podrian impactar al modelo
+    #por lo que sugiere eliminarlas
+
+##STEP
+step(modMex,direction="backward")
+  #Se puede observar que nuestro mejor modelo es el ESM ~ FERM + MIM + MUM
+  #ya que cuenta con un AIC=100.1 y es el menor
+
+#************************************** MEXICO MODIFICADO****************************************** 
+
+EMEX1 <- EMEX[,c(-3,-5,-6,-8,-9)]
+
+##CORRELACIÓN
+cor(EMEX1,use="everything",method="pearson")
+
+##MODELO
+modMex1<-lm(ESM~FERM+MIM+MUM,EMEX1)
+summary(modMex1)
+# Comparando con el modelo anterior nuestro p-value disminuyo de una manera considerable, haciendo que esta sea 
+# menor a .05 y nuestra F aumento de tal manera que supera y por mucho el valor de 1
+
+
+##COEFICIENTES
+modMex1$coefficients
+# y = 321175.831 -17064.633*FERM -2654.497*MIM -1666.025*MUM  
+##ANOVA
+anova(modMex1)
+# muesta que el modelo se basa en un nivel de significancia del .001 y que las variables mas relacionadas son 
+# la Fertilidad y las defunciones en el país de México.
+
+##SUPUESTOS
+#1
+plot(modMex1,which=1,pch=16)
+#Aqui esperamos que los residuos se distribuyan sin patron
+#Una tendencia en la variabilidad de los residuos sugiere que la varianza esta relacionada con
+#la media, violando el supuesto de varianza constante
+
+#2
+plot(modMex1,which=2,pch=16)
+#en este caso esperamos que los residuos sean tipificados alrededor de la linea
+#se observa que si hay distribución normal 
+
+#3
+plot(modMex1,which=3,pch=16)
+#los residuos se distribuyen constantes en los valores ajustados
+#una gráfica sin patrón observable
+
+#4
+plot(modMex1,which=5,pch=16)
+#expone la importancia de cada observacion en el modelo
+#en esta distancia la gráfica nos muestra las observaciobnes que podrian impactar al modelo
+#por lo que sugiere eliminarlas
+
+##STEP
+step(modMex1,direction="backward")
+
+#0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0- ELIMINANDO VALORES SUGERIDOS EN EL SUPUESTO 4 0-0-0-0-0-0-0-0-0-0-0-0-0-0
+EMEX2 <- EMEX1[c(-3,-5,-7),]
+
+cor(EMEX,use="everything",method="pearson")
+
+modMex2 <- lm(ESM~FERM+MIM+MUM,EMEX2)
+summary(modMex2)
+step(modMex2,direction="backward")
+# En este ultimo modelo elimindo los datos sugeridos por el supuesto cuatro, obtenemos que 
+# nuestro modelo se perfecciona al aumentar la R cuadrada siendo esta mas cercana a uno, con un aumento de .09,
+# entonces es un modelo mas ajustado con los valores estimados
+# nuestro p-value llego a aumentar pero sigue estando por debajo del .05, lo que nos sigue diciendo 
+# que el modelo es acepable. 
+# Por lo tanto rechazamos nuestra hipotesis nula
+# EL valor de F aumento de 11 a 17 por lo que se ve mejor el modelo
+
+
+
+#_______________________________________________________________________________________________________________________
+######################ANÁLISI ARGENTINA
+
+EARG<-data.frame(ESA,FERA,PIBA,MIA,CPA,PUA,MUA,AMA,AHA)
+
+##CORRELACIÓN
+cor(EARG,use="everything",method="pearson")
+
+##MODELO
+modArg<-lm(ESA~FERA+PIBA+MIA+CPA+PUA+MUA+AMA+AHA)
+summary(modArg)
+## En este modelo de Argentina se rechaza la Ho ya que supera el .05 el valor de p-value
+## aunque nuestra F sea mayor a 1 y nuestra R cuadrada supere el 90% de relacion con el modelo
+
+#####COEFICIENTES
+modArg$coefficients
+#ESA = 841545.459246 -45906.326034*FERA +46381.690998*PIBA -692.031630*MIA -7.688323*CPA -2563.594891*MUA -14287.408759*AMA -5358.698297*AHA 
+
+##ANOVA
+anova(modArg)
+# solo muestra un nivel de significancia con la variable de fertilidad
+# mientras los demas no estan tan relacionados con la variable de la esperanza de vida de la mujer
+
+##SUPUESTOS
+#1
+plot(modArg,which=1,pch=16)
+  #Aqui esperamos que los residuos se distribuyan sin patron
+  #Una tendencia en la variabilidad de los residuos sugiere que la varianza esta relacionada con
+  #la media, violando el supuesto de varianza constante
+#2
+plot(modArg,which=2,pch=16)
+  #en este caso esperamos que los residuos sean tipificados alrededor de la linea
+  #se observa que si hay distribución normal 
+#3
+plot(modArg,which=3,pch=16)
+  #los residuos se distribuyen constantes en los valores ajustados
+  #una gráfica sin patrón observable
+
+#4
+plot(modArg,which=5,pch=16)
+  #expone la importancia de cada observacion en el modelo
+  #en esta distancia la gráfica nos muestra las observaciobnes que podrian impactar al modelo
+  #por lo que sugiere eliminarlas
+
+##STEP
+step(modArg,direction="backward")
+  #Se puede observar que nuestro mejor modelo es el ESA ~ CPA + MUA + AHA
+  #ya que cuenta con un AIC=117.08
+#**************************************************** ARGENTINA MODIFICADO *********************************
+
+EARG1<- EARG[,c(-2,-3,-4,-6,-8)]
+
+##CORRELACIÓN
+cor(EARG1,use="everything",method="pearson")
+
+##MODELO
+modArg1<-lm(ESA~CPA+MUA+AHA,EARG1)
+summary(modArg1)
+# El nuevo modelo ya no se rechaza la Ho, aunque nuestra R cuadrada diminuyo del 90% pero sigue siendo
+# un mejor modelo al anterior porque los valores estimados tienen un mejor nivel de significancia con la F > 1 
+# y el p-value < .05
+
+#####COEFICIENTES
+modArg1$coefficients
+#ESA = 311355.548951 -9.412865*CPA -1954.307692*MUA -3030.104895*AHA 
+
+##ANOVA
+anova(modArg1)
+# La que mejor se ajusta al modelo es de muertes en el país 
+
+##SUPUESTOS
+#1
+plot(modArg1,which=1,pch=16)
+#Aqui esperamos que los residuos se distribuyan sin patron
+#Una tendencia en la variabilidad de los residuos sugiere que la varianza esta relacionada con
+#la media, violando el supuesto de varianza constante
+
+#2
+plot(modArg1,which=2,pch=16)
+#en este caso esperamos que los residuos sean tipificados alrededor de la linea
+#se observa que si hay distribución normal 
+
+#3
+plot(modArg1,which=3,pch=16)
+#los residuos se distribuyen constantes en los valores ajustados
+#una gráfica sin patrón observable
+
+#4
+plot(modArg1,which=5,pch=16)
+#expone la importancia de cada observacion en el modelo
+#en esta distancia la gráfica nos muestra las observaciobnes que podrian impactar al modelo
+#por lo que sugiere eliminarlas
+
+##STEP
+step(modArg1,direction="backward")
+#Se puede observar que nuestro mejor modelo es el ESA ~ CPA + MUA + AHA
+#ya que cuenta con un AIC=117.08
+
+#0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-ELIMINANDO VARIABLES SUGERIDAS POR EL SUPUESTO 4 0-0-0-0-0-0-0-0
+EARG2<-EARG1[c(-1,-5,-7),]
+
+cor(EARG2,use="everything",method="pearson")
+
+modArg2 <- lm(ESA~CPA+MUA+AHA,EARG2)
+summary(modArg2)
+# Eliminado los datos observados en el supuesto 4 tenemos el mejor modelo refeljandose en nuestra R cuadrada
+# siendo muy cercana a 1 y respetando los intervalos de p-value y F estadistico
+
+step(modArg2,direction="backward")
+
+
+
+#_______________________________________________________________________________________________________________________
+######################ANÁLISI Brasil
+
+EBRA<-data.frame(ESB,FERB,PIBB,MIB,CPB,PUB,MUB,AMB,AHB)
+
+##CORRELACIÓN
+cor(EBRA,use="everything",method="pearson")
+
+##MODELO
+modBra<-lm(ESB~FERB+PIBB+MIB+CPB+PUB+MUB+AMB+AHB)
+summary(modBra)
+# Al igual que los primeros modelos de los paises pasados se rechaza la Hipotesis nula 
+# por el hecho del valor de p-value (.2059)
+
+##coeficientes
+modBra$coefficients
+#ESB = 138511.4950 +47148.3694*FERB +14923.1694*PIBB -15.4177*MIB +532.4611*CPB -520.1016*PUB -1240.3449*MUB -6060.5770*AMB -4890.3405*AHB 
+
+##ANOVA
+anova(modBra)
+# LA fertilidad sigue siendo la unica variable con mas relacion a la esperanza de vida de las mujeres Brasileñas
+
+##SUPUESTO
+#1
+plot(modBra,which=1,pch=16)
+#Aqui esperamos que los residuos se distribuyan sin patron
+#Una tendencia en la variabilidad de los residuos sugiere que la varianza esta relacionada con
+#la media, violando el supuesto de varianza constante
+
+#2
+plot(modMBra,which=2,pch=16)
+#en este caso esperamos que los residuos sean tipificados alrededor de la linea
+#se observa que si hay distribución normal 
+
+#3
+plot(modBra,which=3,pch=16)
+#los residuos se distribuyen constantes en los valores ajustados
+#una gráfica sin patrón observable
+
+#4
+plot(modBra,which=5,pch=16)
+#expone la importancia de cada observacion en el modelo
+#en esta distancia la gráfica nos muestra las observaciobnes que podrian impactar al modelo
+#por lo que sugiere eliminarlas
+
+##STEP
+step(modBra,direction="backward")
+#Se puede observar que nuestro mejor modelo es el ESB ~ FERB + MIB + CPB + PUB + MUB + AHB
+#ya que cuenta con un AIC=102.77
+
+#**************************************** BRASIL MODIFICADO ************************************
+
+EBRA1<- EARG[,c(-3,-8)]
+
+##CORRELACIÓN
+cor(EBRA1,use="everything",method="pearson")
+
+##MODELO
+modBra1<-lm(ESB ~ FERB + MIB + CPB + PUB + MUB + AHB,EBRA1)
+summary(modBra1)
+# p-value y F estan dentro de los intervalos para no rechazar la Ho, aunque nuestra r cuadrada disminuye 
+# con un valor de 0.9892, pero ya es un modelo mejorado
+
+#####COEFICIENTES
+modBra1$coefficients
+#ESA = 159922.41300 + 44610.31608 FERB -14.84285 MIB + 658.63450 CPB -648.35971 PUB -916.89034 MUB -4764.31763 AHB
+
+##ANOVA
+anova(modBra1)
+# Se agregan nuevas variables relacionadas a la esperanza, como lo son:
+# Muertes infantiles
+# Crecimiento de la Población y,
+# Alfabetismo de hombres
+
+##SUPUESTOS
+#1
+plot(modBra1,which=1,pch=16)
+#Aqui esperamos que los residuos se distribuyan sin patron
+#Una tendencia en la variabilidad de los residuos sugiere que la varianza esta relacionada con
+#la media, violando el supuesto de varianza constante
+
+#2
+plot(modBra1,which=2,pch=16)
+#en este caso esperamos que los residuos sean tipificados alrededor de la linea
+#se observa que si hay distribución normal 
+
+#3
+plot(modBra1,which=3,pch=16)
+#los residuos se distribuyen constantes en los valores ajustados
+#una gráfica sin patrón observable
+
+#4
+plot(modBra1,which=5,pch=16)
+#expone la importancia de cada observacion en el modelo
+#en esta distancia la gráfica nos muestra las observaciobnes que podrian impactar al modelo
+#por lo que sugiere eliminarlas
+
+##STEP
+step(modBra1,direction="backward")
+#Se puede observar que nuestro mejor modelo es el ESA ~ CPA + MUA + AHA
+#ya que cuenta con un AIC=117.08
+
+#0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0 ELIMINANDO VALORES SUGERIDOS POR EL SUPUESTO 4 0-0-0-0-0-0-0-0-0-0-0-0-0-0
+
+EBRA2<-EBRA1[c(-1,-5,-10),]
+
+cor(EBRA2,use="everything",method="pearson")
+
+modBra2 <- lm(ESB ~ FERB + MIB + CPB + PUB + MUB + AHB,EBRA2)
+summary(modBra2)
+# El modelo no cambia tanto en los valores ajustados por la R cuadrada, ni la aceptacion del modelo
+# Por lo que recomendamos quedarnos con todas los datos ya que los valores son lo mismos 
+
+step(modBra2,direction="backward")
+
+####Concluyendo que, desde nuestro punto de vista el mejor modelo es el de Argentina,
+#ya que obtenemos buenos resultados con solo 3 variables independientes.
+#Siendo el peor modelo el país de Brasil, que s enecesitan la mayoria de las variables para que la Ho no se rechace.
+
+
