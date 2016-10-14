@@ -1,0 +1,55 @@
+###tarea casa 
+#con la base de la SDEM de enoe2016 segundo trimestre
+#Aplicar un modelo con las siguientes variables
+#Depend.= INGOCUP
+#Indep=edad, sexo, hrsocup, años escolaridad
+
+#Restricciones de población
+#Población depende de Zacatecas, sean de 15 a 65 años, que el ingreso sea entre 1 y 30,000, sean asalariados o subordinados
+#en la base que hagan el modelo sin NA
+Install.packages("foreing")
+require(foreign)
+install.packages("lmtest")
+require("lmtest")
+##BASE DE DATOS
+sdemt216 <-read.dbf("C://Users//ACER//Desktop//sdemt216.dbf")
+
+variables<-c("INGOCUP","SEX","EDA","HRSOCUP","ANIOS_ESC","CD_A","REMUNE2C")
+base1<-sdemt216[,variables]
+zacatecas<-subset(base1,(base1$CD_A=="32")&(as.numeric(base1$EDA)>=15 & as.numeric(base1$EDA)<=65)&(as.numeric(base1$INGOCUP)>=1 & as.numeric(base1$INGOCUP)<=30000)&
+                    (as.numeric(base1$REMUNE2C)==1))
+
+## PARA OMITIR LOS "NA" EN NUESTRA BASE
+zacatecas<-na.omit(zacatecas)
+zacatecas<-zacatecas[,c(-6,-7)]
+##CONVERTIR A NUMERICAS LAS VARIABLES
+zacatecas$INGOCUP<-as.numeric(as.character(zacatecas$INGOCUP))
+zacatecas$SEX<-as.numeric(as.character(zacatecas$SEX))
+zacatecas$EDA<-as.numeric(as.character(zacatecas$EDA))
+zacatecas$HRSOCUP<-as.numeric(as.character(zacatecas$HRSOCUP))
+zacatecas$ANIOS_ESC<-as.numeric(as.character(zacatecas$ANIOS_ESC))
+##CORRELACION
+cor(zacatecas)
+##MODELO
+modelo<-lm(INGOCUP~SEX+EDA+HRSOCUP+ANIOS_ESC,data = zacatecas)
+summary(modelo)
+##STEP
+step(modelo,direction = "backward")
+##ANOVA
+anova(modelo)
+##MODELO AJUSTADO
+zacatecas$ajustado<-fitted(modelo)
+zacatecas$residual<-residuals(modelo)
+zacatecas$rstudent<-rstudent(modelo)
+##PROBANDO NORMALIDAD
+ks.test(zacatecas$rstudent,"pnorm")
+bptest(modelo,studentize = F,data = zacatecas)
+dwtest(modelo,alternative = "two.sided",data = zacatecas)
+##SUPUESTO UNO
+plot(modelo,which=1,pch=16)
+##SUPUESTO DE NORMALIDAD
+plot(modelo,which=2,pch=16)
+##TERCER SUPUESTO
+plot(modelo,which=3,pch=16)
+##CUARTO SUPUEStO
+plot(modelo,which=5,pch=16
