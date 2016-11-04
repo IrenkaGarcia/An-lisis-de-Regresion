@@ -1,0 +1,17 @@
+install.packages("foreign")
+require(foreign)
+install.packages("questionr")
+require(questionr)
+
+mti2013<-read.dbf("C://Users//Sala-C8_2//Downloads//mti2013_bases_conapo_dbf//mti2013_05_17_sdem_precodificado.dbf")
+
+#setwd("C:\Users\Sala-C8_2\Downloads\mti2013_bases_conapo_dbf")
+#mti2013<-data.frame(read.dbf("mti2013_05_17_sdem_precodificado.dbf"))
+
+
+###Poblacion objetivo son objetivos y zonas rurales
+mti2013v1<-subset(mti2013,mti2013$CLASE2==1 & mti2013$T_LOC==4)
+wtd.table(mti2013v1$SEX,weights = mti2013v1$FAC_MTI)
+wtd.table(mti2013$T_LOC,weights = mti2013$FAC_MTI)
+wtd.table(mti2013$T_LOC,mti2013$CLASE2,weights = mti2013$FAC_MTI)
+wtd.table(mti2013v1$T_PER,weights = mti2013v1$FAC_MTI)
