@@ -1,0 +1,31 @@
+install.packages("foreign")
+require (foreign)
+setwd("C://Users//SALA-C7//Desktop//2016")
+
+coe1<-data.frame(read.dbf("coe1t216.dbf"))
+coe2<-data.frame(read.dbf("coe2t216.dbf"))
+sdemt<-data.frame(read.dbf("sdemt216.dbf"))
+folio<- paste(sdemt$CD_A,sdemt$ENT,sdemt$CON,sdemt$V_SEL,sdemt$N_HOG,sdemt$H_MUD,sdemt$N_REN)
+
+
+X<-data.frame(sdemt,folio)
+
+X$folio
+
+folio<- paste(coe1$CD_A,coe1$ENT,coe1$CON,coe1$V_SEL,coe1$N_HOG,coe1$H_MUD,coe1$N_REN)
+
+X1<- data.frame(coe1,folio)
+
+folio<- paste(coe2$CD_A,coe1$ENT,coe2$CON,coe2$V_SEL,coe2$N_HOG,coe2$H_MUD,coe2$N_REN)
+
+X2<- data.frame(coe2,folio)
+
+total<- merge(X,X1,by="folio",all.x = TRUE)
+
+ENOETOTAL<-merge(total,X2,by="folio", all.x =TRUE)
+
+ls(X)
+ls(X1)
+require(questionr)
+wtd.table(ENOETOTAL$SEX,ENOETOTAL$P1,weights=ENOETOTAL$FAC)
+table(ENOETOTAL$SEX,ENOETOTAL$P1)
