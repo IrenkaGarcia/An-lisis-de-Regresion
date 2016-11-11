@@ -1,0 +1,29 @@
+###### base de datos de eness 2013 #############
+###CUANTOS RECIBEN PENSION SIN HABER COTIZADO EN EL IMSS?
+
+
+setwd("C://Users//ACER//Desktop")
+install.packages("foreign")
+require (foreign)
+eness<-data.frame(read.dbf("eness2013.dbf"))
+
+
+install.packages("questionr")
+require(questionr)
+
+##### cotizo fuera del IMSS
+cot <- subset(eness, eness$P10_1 == "2" | eness$P10_1=="3" | eness$P10_1=="4" | eness$P10_1=="5")
+View(cot$P10_1)
+
+wtd.table(cot$P10_1)
+
+x<-summary.factor(cot$P10_1)
+sum(x)
+
+#### reciben pension 
+pen<- subset(eness,eness$P13_1 == "2" | eness$P13_1=="3" | eness$P13_1=="4" | eness$P13_1=="5"| eness$P13_1=="6")
+wtd.table(pen$P13_1)
+y <- summary.factor(pen$P13_1)
+sum(y)
+
+View(y)
