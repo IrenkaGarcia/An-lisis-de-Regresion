@@ -1,0 +1,108 @@
+###### base de datos de eness 2013 #############
+###CUANTOS RECIBEN PENSION SIN HABER COTIZADO EN EL IMSS?
+
+require(foreign)
+install.packages("question")
+require(questionr)
+setwd("C://Users//ACER//Desktop")
+eness<-data.frame(read.dbf("eness2013_cb_enoe_sdem.dbf")) 
+class(eness$P13_1)
+
+enessh<-data.frame(read.dbf("eness2013_hogares.dbf"))
+
+cotizo<-subset(eness,eness$P10_1=="1"|eness$P10_1=="2"|eness$P10_1=="3"| eness$P10_1=="4"| eness$P10_1=="5"|eness$P10_1=="0"|eness$P10_1=="9")
+table(cotizo$P10_1)
+pension<-subset(cotizo,cotizo$P13_1=="2"|cotizo$P13_1=="3"| cotizo$P13_1=="4"| cotizo$P13_1=="5"|cotizo$P13_1=="6"|cotizo$P13_1=="0"|cotizo$P13_1=="9")
+table(pension$P13_1)
+pension$P13_1<-revalue(factor(pension$P13_1),c("1"=NA))
+pension$P13_1<-revalue(factor(pension$P13_1),c("9"=NA))
+table(pension$P13_1)
+
+#POBOBJ<-subset(cotizo,cotizo$P13_1=="2"|cotizo$P13_1=="3"| cotizo$P13_1=="4"| cotizo$P13_1=="5")
+###REciben pensión
+
+
+pension$P13_1<- as.character(pension$P13_1)
+pension$P13_1[as.numeric(pension$P13_1) == 0 ] <- 1
+pension$P13_1[as.numeric(pension$P13_1) >= 2 & as.numeric(pension$P13_1)<= 6] <- 2
+
+
+
+table(pension$P13_1)
+pension$P13_1<-as.character(pension$P13_1)
+class(pension$P13_1)
+###0 no recibe
+#1 reciben pension
+
+
+## 1)Grupos de edad
+#pension$EDA<-as.character(pension$EDA)
+#class(pension$EDA)
+#pension$EDA1[as.numeric(pension$EDA) >= 30 & as.numeric(pension$EDA)<= 39] <- 1
+#pension$EDA1[as.numeric(pension$EDA) >= 40 & as.numeric(pension$EDA)<= 49] <- 2
+#pension$EDA1[as.numeric(pension$EDA) >= 50 & as.numeric(pension$EDA)<= 59] <- 3
+#pension$EDA1[as.numeric(pension$EDA) >= 60 & as.numeric(pension$EDA)<= 69] <- 4
+#pension$EDA1[as.numeric(pension$EDA) >= 70] <- 5
+#table (pension$EDA1)
+#pension$EDA1<-as.factor(pension$EDA1)
+#class(pension$EDA1)
+
+## 2)Sexo
+table (pension$SEX)
+
+
+## 3)Nivel Educativo
+class(pension$ NIV_INS)
+pension$NIV_INS1<-as.integer(pension$NIV_INS)
+install.packages("plyr")
+library(plyr)
+pension$NIV_INS1<-revalue(factor(pension$NIV_INS1),c("5"=NA))
+
+pension$NIV_INS1[as.numeric(pension$NIV_INS) == 1] <- 1
+pension$NIV_INS1[as.numeric(pension$NIV_INS) == 2] <- 2
+pension$NIV_INS1[as.numeric(pension$NIV_INS) == 3] <- 3
+pension$NIV_INS1[as.numeric(pension$NIV_INS) == 4] <- 4
+table (pension$NIV_INS1)
+
+class(pension$NIV_INS1)
+## 4)Condición de Actividad 
+
+
+pension$POS_OCU<-revalue(factor(pension$POS_OCU),c("0"=NA))
+
+pension$POS_OCU<-as.character(pension$POS_OCU)
+pension$POS_OCU[as.numeric(pension$POS_OCU) == 1] <- 1
+pension$POS_OCU[as.numeric(pension$POS_OCU) == 2] <- 2
+pension$POS_OCU[as.numeric(pension$POS_OCU) == 3] <- 3
+pension$POS_OCU[as.numeric(pension$POS_OCU) == 4] <- 4
+table (pension$POS_OCU)
+class(pension$POS_OCU)
+
+###modelo de regresion
+require(nnet)
+mod1<- multinom(P13_1~1,data=pension,trace=FALSE)
+modfin<- multinom(P13_1~SEX+POS_OCU+NIV_INS1,data=pension)
+g<-summary(modfin,Wald=T)
+print(g)
+###TABLA EN LATEX
+
+install.packages("stargazer")
+library(stargazer)
+s<-stargazer(modfin,type="html",title="coefficients", summary = T)
+stargazer(modfin,type = "text", title = "mlogit", digits=2,out="C:\\Users\\ACER\\Desktop\\gaxiolapens.txt")
+###NUESTRA VARIABLE DEPENDIENTE ES P13_1 (SI RECIBE PENSIÓN)
+#POR LO QUE NOS DICE NUESTRO CUADRO SON LOS NIVELES DE SIGNIFICANCIA DE NUESTRAS VARIABLES INDIVIDUALES
+
+# QUE UNA MUJER TENGA UNA PENSIÓN ES .2665 VECES MENOR A LA de UN HOMBRE
+
+#los empleadores es 3.49 veces mayor, los trabajadores por cuenta propia es 2.94, trab. sin pago son 1.75  veces
+#mayor que reciban pension que los trabajadores subordinados  y remunerados
+
+# la primaria completa es 2.11 veces mayor, secundaria completa es 3.004 veces mayor,
+# medio superior y superior es 5.0028 veces mayor que recibir una pension que los que tienen la primaria 
+#incompleta
+
+
+table(pension$P13_1)
+
+table(pension$EDA1)
